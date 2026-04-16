@@ -1,0 +1,30 @@
+---
+# Lista degli utenti da gestire. Ogni elemento supporta i seguenti campi:
+#   name           (required) nome dell'utente
+#   ssh_keys       (optional) lista di chiavi pubbliche SSH da autorizzare
+#   groups         (optional) lista di gruppi supplementari (es. [wheel] o [sudo])
+#   append         (optional) true = aggiunge ai groups esistenti; default true
+#   shell          (optional) shell di login; default /bin/bash
+#   create_home    (optional) crea la home; default true
+#   sudo           (optional) abilita sudo via /etc/sudoers.d/<name>; default true
+#   sudo_nopasswd  (optional) NOPASSWD nel sudoers; default true
+#   state          (optional) present|absent; default present
+#   remove         (optional) quando state=absent, elimina anche la home; default false
+#
+# Esempio:
+# manage_users_list:
+#   - name: dedalus
+#     ssh_keys:
+#       - "ssh-rsa AAAA... dedalus"
+#     groups: [wheel]
+manage_users_list: []
+
+manage_users_default_shell: /bin/bash
+manage_users_default_create_home: true
+manage_users_default_sudo: true
+manage_users_default_sudo_nopasswd: true
+manage_users_default_state: present
+manage_users_default_append_groups: true
+
+# Directory sudoers drop-in (standard su tutte le distro mainstream)
+manage_users_sudoers_dir: /etc/sudoers.d

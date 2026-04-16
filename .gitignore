@@ -1,0 +1,9 @@
+*.retry
+*.swp
+*.swo
+.vscode/
+.idea/
+__pycache__/
+*.pyc
+.venv/
+venv/

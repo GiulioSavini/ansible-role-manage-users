@@ -1,0 +1,57 @@
+---
+galaxy_info:
+  role_name: manage_users
+  namespace: giuliosavini
+  author: Giulio Savini
+  description: Gestione utenti Linux (creazione/rimozione, chiavi SSH, gruppi, sudo NOPASSWD)
+  license: MIT
+  min_ansible_version: "2.12"
+  platforms:
+    - name: EL
+      versions:
+        - "7"
+        - "8"
+        - "9"
+    - name: Fedora
+      versions:
+        - all
+    - name: Debian
+      versions:
+        - bullseye
+        - bookworm
+    - name: Ubuntu
+      versions:
+        - focal
+        - jammy
+        - noble
+    - name: OracleLinux
+      versions:
+        - "7"
+        - "8"
+        - "9"
+    - name: Rocky
+      versions:
+        - "8"
+        - "9"
+    - name: AlmaLinux
+      versions:
+        - "8"
+        - "9"
+    - name: openSUSE
+      versions:
+        - "15"
+    - name: SLES
+      versions:
+        - "15"
+  galaxy_tags:
+    - users
+    - ssh
+    - sudo
+    - security
+    - linux
+    - awx
+
+collections:
+  - ansible.posix
+
+dependencies: []
