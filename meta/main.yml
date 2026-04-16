@@ -1,7 +1,6 @@
 ---
 galaxy_info:
   role_name: manage_users
-  namespace: giuliosavini
   author: Giulio Savini
   description: Gestione utenti Linux (creazione/rimozione, chiavi SSH, gruppi, sudo NOPASSWD)
   license: MIT
@@ -9,40 +8,25 @@ galaxy_info:
   platforms:
     - name: EL
       versions:
-        - "7"
-        - "8"
-        - "9"
+        - all
     - name: Fedora
       versions:
         - all
     - name: Debian
       versions:
-        - bullseye
-        - bookworm
+        - all
     - name: Ubuntu
       versions:
-        - focal
-        - jammy
-        - noble
+        - all
     - name: OracleLinux
       versions:
-        - "7"
-        - "8"
-        - "9"
-    - name: Rocky
-      versions:
-        - "8"
-        - "9"
-    - name: AlmaLinux
-      versions:
-        - "8"
-        - "9"
+        - all
     - name: openSUSE
       versions:
-        - "15"
+        - all
     - name: SLES
       versions:
-        - "15"
+        - all
   galaxy_tags:
     - users
     - ssh
