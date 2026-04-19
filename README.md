@@ -48,9 +48,9 @@ I default globali (se vuoi cambiarli) sono in `defaults/main.yml`
     - role: ansible-role-manage-users
       vars:
         manage_users_list:
-          - name: dedalus
+          - name: xxxxxxxx
             ssh_keys:
-              - "ssh-rsa AAAAB3NzaC1yc2E... dedalus"
+              - "ssh-rsa xxxxxxxxxxttttt"
             groups: [wheel]       # su Debian/Ubuntu usa [sudo]
             sudo: true
             sudo_nopasswd: true
@@ -73,7 +73,7 @@ I default globali (se vuoi cambiarli) sono in `defaults/main.yml`
    *Textarea* e formato **YAML**, con default simile a:
 
    ```yaml
-   - name: dedalus
+   - name: xxxxxxx
      ssh_keys:
        - "ssh-rsa AAAA..."
      groups: [wheel]
