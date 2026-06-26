@@ -1,0 +1,16 @@
+---
+# Test locale: genera una coppia di chiavi sul controller (nessun utente OS creato).
+# Esegue solo i task di keygen tramite il tag 'manage-users-keygen'.
+- name: Test generazione chiavi SSH (solo controller)
+  hosts: localhost
+  connection: local
+  gather_facts: false
+  vars:
+    manage_users_keys_dir: /tmp/manage-users-test-keys
+    manage_users_list:
+      - name: testkeygen
+        generate_key: true
+        key_type: ed25519
+        key_comment: "testkeygen@ci"
+  roles:
+    - role: ansible-role-manage-users
