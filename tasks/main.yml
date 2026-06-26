@@ -50,6 +50,23 @@
     - manage-users
     - manage-users-ssh
 
+- name: Autorizza la chiave generata sul controller
+  ansible.posix.authorized_key:
+    user: "{{ item.name }}"
+    key: "{{ lookup('file', manage_users_keys_dir + '/' + item.name + '/id_' + (item.key_type | default(manage_users_default_key_type)) + '.pub') }}"
+    state: present
+    exclusive: false
+  loop: "{{ manage_users_list }}"
+  loop_control:
+    label: "{{ item.name }}"
+  when:
+    - (item.state | default(manage_users_default_state)) == 'present'
+    - (item.generate_key | default(false)) | bool
+    - (item.authorize_generated_key | default(true)) | bool
+  tags:
+    - manage-users
+    - manage-users-ssh
+
 - name: Configura sudoers per utenti con sudo abilitato
   ansible.builtin.copy:
     dest: "{{ manage_users_sudoers_dir }}/{{ item.name }}"
