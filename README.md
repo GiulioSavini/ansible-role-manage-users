@@ -127,6 +127,7 @@ Tag utili: `--tags manage-users-keygen` (solo generazione),
 
 - `manage-users` — tutti i task del ruolo
 - `manage-users-account` — solo creazione/rimozione utente
+- `manage-users-keygen` — solo generazione chiavi sul controller
 - `manage-users-ssh` — solo chiavi SSH
 - `manage-users-sudo` — solo sudoers
 

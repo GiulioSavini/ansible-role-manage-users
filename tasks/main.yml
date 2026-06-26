@@ -32,6 +32,7 @@
   loop: "{{ manage_users_list }}"
   loop_control:
     label: "{{ item.name }}"
+  no_log: true
   tags:
     - manage-users
     - manage-users-account
@@ -53,7 +54,7 @@
 - name: Autorizza la chiave generata sul controller
   ansible.posix.authorized_key:
     user: "{{ item.name }}"
-    key: "{{ lookup('file', manage_users_keys_dir + '/' + item.name + '/id_' + (item.key_type | default(manage_users_default_key_type)) + '.pub') }}"
+    key: "{{ lookup('file', manage_users_keys_dir ~ '/' ~ item.name ~ '/id_' ~ (item.key_type | default(manage_users_default_key_type)) ~ '.pub') }}"
     state: present
     exclusive: false
   loop: "{{ manage_users_list }}"
@@ -63,6 +64,7 @@
     - (item.state | default(manage_users_default_state)) == 'present'
     - (item.generate_key | default(false)) | bool
     - (item.authorize_generated_key | default(true)) | bool
+    - (lookup('ansible.builtin.fileglob', manage_users_keys_dir ~ '/' ~ item.name ~ '/id_*.pub') | length) > 0
   tags:
     - manage-users
     - manage-users-ssh

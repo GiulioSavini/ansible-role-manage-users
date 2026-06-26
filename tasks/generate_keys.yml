@@ -13,6 +13,7 @@
   delegate_to: localhost
   run_once: true
   become: false
+  no_log: true
   tags:
     - manage-users
     - manage-users-keygen
