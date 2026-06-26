@@ -13,6 +13,13 @@
     - manage-users
     - always
 
+- name: Genera chiavi SSH sul controller (se richiesto)
+  ansible.builtin.include_tasks: generate_keys.yml
+  when: manage_users_list | selectattr('generate_key', 'defined') | selectattr('generate_key') | list | length > 0
+  tags:
+    - manage-users
+    - manage-users-keygen
+
 - name: Crea o rimuovi utenti
   ansible.builtin.user:
     name: "{{ item.name }}"

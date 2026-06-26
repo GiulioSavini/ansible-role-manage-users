@@ -1,0 +1,40 @@
+---
+- name: Crea le directory delle chiavi sul controller
+  ansible.builtin.file:
+    path: "{{ manage_users_keys_dir }}/{{ item.name }}"
+    state: directory
+    mode: '0700'
+  loop: "{{ manage_users_list }}"
+  loop_control:
+    label: "{{ item.name }}"
+  when:
+    - (item.state | default(manage_users_default_state)) == 'present'
+    - (item.generate_key | default(false)) | bool
+  delegate_to: localhost
+  run_once: true
+  become: false
+  tags:
+    - manage-users
+    - manage-users-keygen
+
+- name: Genera le coppie di chiavi SSH sul controller
+  community.crypto.openssh_keypair:
+    path: "{{ manage_users_keys_dir }}/{{ item.name }}/id_{{ item.key_type | default(manage_users_default_key_type) }}"
+    type: "{{ item.key_type | default(manage_users_default_key_type) }}"
+    size: "{{ (item.key_bits | default(manage_users_default_key_bits)) if (item.key_type | default(manage_users_default_key_type)) == 'rsa' else omit }}"
+    passphrase: "{{ item.key_passphrase | default(omit) }}"
+    comment: "{{ item.key_comment | default(item.name) }}"
+    mode: '0600'
+  loop: "{{ manage_users_list }}"
+  loop_control:
+    label: "{{ item.name }}"
+  when:
+    - (item.state | default(manage_users_default_state)) == 'present'
+    - (item.generate_key | default(false)) | bool
+  delegate_to: localhost
+  run_once: true
+  become: false
+  no_log: true
+  tags:
+    - manage-users
+    - manage-users-keygen
