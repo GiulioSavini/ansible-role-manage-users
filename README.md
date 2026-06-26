@@ -1,5 +1,8 @@
 # ansible-role-manage-users
 
+[![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](LICENSE)
+[![Ansible](https://img.shields.io/badge/ansible-%3E%3D2.12-black?logo=ansible)](https://docs.ansible.com/)
+
 Ruolo Ansible per gestire utenti Linux in modo idempotente: creazione/rimozione,
 chiavi SSH autorizzate, appartenenza a gruppi e sudo senza password tramite
 `/etc/sudoers.d/`. Pensato per essere comodo con **AWX** (basta esporre
@@ -108,6 +111,29 @@ cartella `keys/` è in `.gitignore`. Conserva private e passphrase con
 Tag utili: `--tags manage-users-keygen` (solo generazione),
 `--tags manage-users-ssh` (solo chiavi autorizzate/rotazione).
 
+### Dove finisce la chiave privata
+
+Per ogni utente con `generate_key: true` la coppia viene creata **sul controller**:
+
+```
+keys/<utente>/id_<type>        # chiave privata (mode 0600)
+keys/<utente>/id_<type>.pub    # chiave pubblica (autorizzata sul target)
+```
+
+La pubblica viene aggiunta in automatico agli `authorized_keys` del target; la
+**privata resta sul controller** ed è tua responsabilità consegnarla all'utente
+in modo sicuro. Esempio per leggerla e darla a chi deve usarla:
+
+```bash
+cat keys/deploy/id_ed25519        # la privata da consegnare out-of-band
+cat keys/deploy/id_ed25519.pub    # la pubblica (già autorizzata sul target)
+```
+
+Se hai impostato `key_passphrase`, l'utente la userà per sbloccare la chiave al
+primo `ssh`. Consiglio: tieni le private e le passphrase in un **vault**
+(`ansible-vault encrypt keys/...`) o in un secret manager, mai in chiaro su git
+(la cartella `keys/` è già in `.gitignore`).
+
 ## Uso con AWX
 
 1. In Job Template, collega il ruolo nel playbook.
@@ -115,13 +141,25 @@ Tag utili: `--tags manage-users-keygen` (solo generazione),
    *Textarea* e formato **YAML**, con default simile a:
 
    ```yaml
-   - name: xxxxxxx
+   # utente con chiave già esistente
+   - name: alice
      ssh_keys:
-       - "ssh-rsa AAAA..."
+       - "ssh-ed25519 AAAA... alice@laptop"
+     groups: [wheel]            # su Debian/Ubuntu: [sudo]
+
+   # utente con chiave generata dal ruolo + passphrase
+   - name: deploy
+     generate_key: true
+     key_type: ed25519
+     key_passphrase: "CAMBIAMI"  # meglio passarla da un Vault credential
      groups: [wheel]
+     sudo: true
+     sudo_nopasswd: true
    ```
 
-3. Lancia il job sull'inventory target.
+3. Lancia il job sull'inventory target. La/le chiavi private generate restano
+   sul controller AWX in `keys/<utente>/`: recuperale dal job artifact o da una
+   `fetch`/sync verso uno store sicuro, **non** lasciarle sul nodo di esecuzione.
 
 ## Tag disponibili
 
