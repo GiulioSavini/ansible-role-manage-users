@@ -67,6 +67,19 @@
     - manage-users
     - manage-users-ssh
 
+- name: Rimuovi chiavi SSH ruotate (rotazione mirata)
+  ansible.posix.authorized_key:
+    user: "{{ item.0.name }}"
+    key: "{{ item.1 }}"
+    state: absent
+  loop: "{{ manage_users_list | subelements('ssh_keys_absent', skip_missing=True) }}"
+  loop_control:
+    label: "{{ item.0.name }}"
+  when: (item.0.state | default(manage_users_default_state)) == 'present'
+  tags:
+    - manage-users
+    - manage-users-ssh
+
 - name: Configura sudoers per utenti con sudo abilitato
   ansible.builtin.copy:
     dest: "{{ manage_users_sudoers_dir }}/{{ item.name }}"
