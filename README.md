@@ -32,6 +32,13 @@ un utente:
 | `sudo_nopasswd`| bool    | `true`                             | Rende il sudo senza password                             |
 | `state`        | string  | `present`                          | `present` o `absent`                                     |
 | `remove`       | bool    | `false`                            | Con `state=absent`, elimina anche la home                |
+| `generate_key` | bool    | `false`                            | Genera una coppia di chiavi sul **controller** (`keys/<name>/id_<type>`)   |
+| `key_type`      | string  | `ed25519`                          | `ed25519` o `rsa`                                                          |
+| `key_bits`      | int     | `4096`                             | Dimensione chiave (solo per `rsa`)                                         |
+| `key_passphrase`| string  | *(nessuna)*                        | Passphrase della chiave privata (gestita con `no_log`)                    |
+| `key_comment`   | string  | `<name>`                           | Commento della chiave pubblica                                            |
+| `authorize_generated_key` | bool | `true`                  | Aggiunge la pub generata agli `authorized_keys` sul target                |
+| `ssh_keys_absent`| list   | `[]`                               | Pub da rimuovere dagli `authorized_keys` (rotazione mirata)               |
 
 I default globali (se vuoi cambiarli) sono in `defaults/main.yml`
 (`manage_users_default_*`).
@@ -65,6 +72,41 @@ I default globali (se vuoi cambiarli) sono in `defaults/main.yml`
             state: absent
             remove: true           # rimuove anche la home
 ```
+
+## Generazione e rotazione chiavi SSH
+
+Le chiavi vengono generate **sul controller** in `manage_users_keys_dir`
+(default `keys/` accanto al playbook). Le private NON vanno committate: la
+cartella `keys/` è in `.gitignore`. Conserva private e passphrase con
+`ansible-vault` o storage out-of-band.
+
+```yaml
+- name: Setup utenti e chiavi
+  hosts: all
+  become: true
+  roles:
+    - role: ansible-role-manage-users
+      vars:
+        manage_users_list:
+          # utente nuovo con chiave generata + passphrase + sudo nopasswd
+          - name: deploy
+            generate_key: true
+            key_type: ed25519
+            key_passphrase: "{{ vault_deploy_passphrase }}"
+            groups: [wheel]          # su Debian/Ubuntu: [sudo]
+            sudo: true
+            sudo_nopasswd: true
+
+          # rotazione: rimuove la vecchia pub, autorizza la nuova
+          - name: alice
+            ssh_keys:
+              - "ssh-ed25519 AAAA...NUOVA alice@new"
+            ssh_keys_absent:
+              - "ssh-ed25519 AAAA...VECCHIA alice@old"
+```
+
+Tag utili: `--tags manage-users-keygen` (solo generazione),
+`--tags manage-users-ssh` (solo chiavi autorizzate/rotazione).
 
 ## Uso con AWX
 
