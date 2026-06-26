@@ -7,3 +7,6 @@ __pycache__/
 *.pyc
 .venv/
 venv/
+
+# Chiavi private generate dal ruolo: non committarle mai
+keys/
